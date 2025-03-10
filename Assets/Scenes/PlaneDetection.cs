@@ -1,8 +1,11 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public class PlaneDetection : MonoBehaviour
 {
@@ -23,6 +26,24 @@ public class PlaneDetection : MonoBehaviour
     private float initialDistance;
 
     private Vector3 initialScale;
+
+    private CancellationTokenSource _cts;
+
+    private async void Start()
+    {
+        _cts = new CancellationTokenSource();
+        try
+        {
+            GooglePlaceEntities result = await GooglePlaceResponseService.Instance.GetAllPlaceInfo(_cts.Token);
+            Debug.Log($"取得した場所情報:)" + result);
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError("GetAllPlaceInfo 呼び出しエラー: " + ex.Message);
+
+        }
+
+    }
 
     void Awake()
     {
